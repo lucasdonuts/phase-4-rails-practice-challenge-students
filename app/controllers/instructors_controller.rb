@@ -23,6 +23,7 @@ class InstructorsController < ApplicationController
   def destroy
     instructor = find_instructor
     instructor.destroy
+    head :no_content
   end
 
   private
