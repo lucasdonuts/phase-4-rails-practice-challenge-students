@@ -1,36 +1,24 @@
 class StudentsController < ApplicationController
   def index
     students = Student.all
-    render json: students
+    render json: students, except: omitted, status: :ok
   end
 
   def show
     student = find_student
-    if student
-      render json: student, except: [:created_at, :updated_at], status: :ok
-    else
-      render json: { errors: "Student not found" }, status: :not_found
-    end
+    render json: student, except: omitted, status: :ok
   end
 
   def create
     instructor = Instructor.find(params[:instructor_id])
-    if instructor
-      student = Student.create!(student_params)
-      render json: student, status: :created
-    else
-      render json: { errors: "Instructor not found" }
-    end
-  rescue ActiveRecord::RecordInvalid => e
-    render json: { errors: e.record.errors.messages }, status: :unprocessable_entity
+    student = Student.create!(student_params)
+    render json: student, status: :created
   end
 
   def update
     student = find_student
     student.update!(student_params)
     render json: student, status: :ok
-  rescue ActiveRecord::RecordInvalid => e
-    render json: { errors: e.record.errors.messages }, status: :unprocessable_entity
   end
 
   def destroy
@@ -47,4 +35,8 @@ class StudentsController < ApplicationController
   def find_student
     Student.find(params[:id])
   end
+
+  # def omitted
+  #   [:created_at, :updated_at]
+  # end
 end
